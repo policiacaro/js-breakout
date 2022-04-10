@@ -27,6 +27,7 @@
   const colors = ["#0095DD", "#0006DD", "#7100DD", "#00DD6B"]; // array of colors for the ball to change into when it bounces
   let colorVariable = 0;
   let score = 0;
+  let lives = 3;
 
   //variables for bricks; all dimensions and starting points
   let brickRowCount = 1;
@@ -103,7 +104,7 @@
             if (score/100 === brickColumnCount * brickRowCount) {
               alert(`YOU WIN, CONGRATULATIONS! \n\nYour score was ${score} points, thank you for playing!`);
               document.location.reload();
-              clearInterval(interval); // Needed for Chrome to end game
+              //clearInterval(interval); // Needed for Chrome to end game
             }
           }
         }
@@ -115,6 +116,12 @@
     ctx.font = "16px Arial";
     ctx. fillStyle = "Maroon";
     ctx.fillText("Score: "+score, 8, 20);
+  }
+
+  function drawLives() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "Maroon";
+    ctx.fillText("Lives: "+lives, canvas.width-65, 20);
   }
 
   function drawBricks() {
@@ -141,6 +148,7 @@
     drawBall();
     drawPaddle();
     drawScore();
+    drawLives();
     collisionDetection();
 
     if (leftPressed) {
@@ -163,17 +171,26 @@
     }
     //when the ball hits the paddle, reverse ball direction and add to ball speed
     if ((y >= (paddleY - ballRadius) && y <= (paddleY + paddleHeight)) && (x >= paddleX && x <= paddleX + paddleWidth)) {
-      dx += 0.2;
-      dy += 0.2;
+      dx += 0.4;
+      dy += 0.4;
       dy = -dy;
       colorChanger();
     }
 
     //when ball hits bottom of screen, GAME OVER alert message
     if (y >= canvas.height - ballRadius) {
-      alert(`GAME OVER`);
-      document.location.reload();
-      clearInterval(interval); //Needed for Chrome to end game
+      lives--;
+      if (!lives) {
+        alert(`GAME OVER`);
+        document.location.reload();
+        //clearInterval(interval); //Needed for Chrome to end game
+      } else{
+        x = canvas.width/2;
+        y = canvas.height-30;
+        dx = 2;
+        dy = -2;
+        paddleX = (canvas.width-paddleWidth)/2;
+      }
     }
 
     //when ball hits left side of screen, reverse direction
@@ -186,13 +203,15 @@
       dx = -dx;
       colorChanger();
     }
+    requestAnimationFrame(draw);
   }
 
   document.addEventListener("keydown", keyDownHandler, false);
   document.addEventListener("keyup", keyUpHandler, false);
   document.addEventListener("mousemove", mouseMoveHandler, false);
 
-  let interval = setInterval(draw, 10); // needed to call variable in clearInterval function for Chrome
+  //let interval = setInterval(draw, 10); // needed to call variable in clearInterval function for Chrome
+  draw();
 
 </script>
 

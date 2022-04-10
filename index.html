@@ -26,6 +26,7 @@
   let paddleX = (canvas.width-paddleWidth) / 2; // paddle starting corner for draw function
   const colors = ["#0095DD", "#0006DD", "#7100DD", "#00DD6B"]; // array of colors for the ball to change into when it bounces
   let colorVariable = 0;
+  let score = 0;
 
   //variables for bricks; all dimensions and starting points
   let brickRowCount = 1;
@@ -91,10 +92,22 @@
           if (x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
             dy = -dy;
             b.status = 0;
+            score += 100;
+            if (score/100 === brickColumnCount * brickRowCount) {
+              alert(`YOU WIN, CONGRATULATIONS! \n\nYour score was ${score} points, thank you for playing!`);
+              document.location.reload();
+              clearInterval(interval); // Needed for Chrome to end game
+            }
           }
         }
       }
     }
+  }
+
+  function drawScore() {
+    ctx.font = "16px Arial";
+    ctx. fillStyle = "Maroon";
+    ctx.fillText("Score: "+score, 8, 20);
   }
 
   function drawBricks() {
@@ -120,6 +133,7 @@
     drawBricks();
     drawBall();
     drawPaddle();
+    drawScore();
     collisionDetection();
 
     if (leftPressed) {

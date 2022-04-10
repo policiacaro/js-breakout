@@ -28,13 +28,13 @@
   let colorVariable = 0;
 
   //variables for bricks; all dimensions and starting points
-  let brickRowCount = 3;
-  let brickColumnCount = 5;
-  let brickWidth = 75;
+  let brickRowCount = 5;
+  let brickColumnCount = 6;
+  let brickWidth = 60;
   let brickHeight = 20;
-  let brickPadding = 10;
+  let brickPadding = 5;
   let brickOffsetTop = 30;
-  let brickOffsetLeft = 30;
+  let brickOffsetLeft = 50;
   let bricks = [];
   for(let c=0; c<brickColumnCount; c++) {
     bricks[c] = [];
@@ -48,10 +48,12 @@
   function drawBricks() {
     for(let c=0; c<brickColumnCount; c++) {
       for(let r=0; r<brickRowCount; r++) {
-        bricks[c][r].x = 0;
-        bricks[c][r].y = 0;
+        let brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+        let brickY = (r * 23)+brickOffsetTop;
+        bricks[c][r].x = brickX;
+        bricks[c][r].y = brickY;
         ctx.beginPath();
-        ctx.rect(0, 0, brickWidth, brickHeight);
+        ctx.rect(brickX, brickY, brickWidth, brickHeight);
         ctx.fillStyle = "#0095DD";
         ctx.fill();
         ctx.closePath();
@@ -98,6 +100,7 @@
 
   function draw() { // main gameplay loop, drawing canvas, paddle and ball
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBricks();
     drawBall();
     drawPaddle();
     if (leftPressed) {

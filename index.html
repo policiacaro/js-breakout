@@ -28,6 +28,7 @@
   let colorVariable = 0;
   let score = 0;
   let lives = 3;
+  let gameStartFlag = false;
 
   //variables for bricks; all dimensions and starting points
   let brickRowCount = 1;
@@ -46,6 +47,7 @@
   }
   let rightPressed = false;
   let leftPressed = false;
+  let spacePressed = false;
 
 
   function colorChanger() { // cycles through the colors in colors array
@@ -69,19 +71,26 @@
     ctx.closePath();
   }
 
-  function keyDownHandler(e) { // check if right arrow is pressed
-    if(e.key == "Right" || e.key == "ArrowRight") {
+  function keyDownHandler(e) { // check if right/left arrow is pressed
+    if (e.key == "Right" || e.key == "ArrowRight") {
       rightPressed = true;
-    } else if(e.key == "Left" || e.key == "ArrowLeft") {
+    } else if (e.key == "Left" || e.key == "ArrowLeft") {
       leftPressed = true;
+    }
+    if (e.keyCode == 32 ) {
+      spacePressed = true;
+      gameStartFlag = true;
     }
   }
 
   function keyUpHandler(e) { // check if left arrow is pressed
-    if(e.key == "Right" || e.key == "ArrowRight") {
+    if (e.key == "Right" || e.key == "ArrowRight") {
       rightPressed = false;
-    } else if(e.key == "Left" || e.key == "ArrowLeft") {
+    } else if (e.key == "Left" || e.key == "ArrowLeft") {
       leftPressed = false;
+    }
+    if (e.keyCode == 32) {
+      spacePressed = false;
     }
   }
 
@@ -104,7 +113,6 @@
             if (score/100 === brickColumnCount * brickRowCount) {
               alert(`YOU WIN, CONGRATULATIONS! \n\nYour score was ${score} points, thank you for playing!`);
               document.location.reload();
-              //clearInterval(interval); // Needed for Chrome to end game
             }
           }
         }
@@ -142,6 +150,10 @@
     }
   }
 
+  function gameStart() {
+
+  }
+
   function draw() { // main gameplay loop, drawing canvas, paddle and ball
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBricks();
@@ -162,8 +174,14 @@
         paddleX = canvas.width - paddleWidth;
       }
     }
-    x += dx;
-    y += dy;
+    if (gameStartFlag) {
+      y += dy;
+    }
+    if (!gameStartFlag) {
+      x = (paddleX + (paddleWidth/2));
+    }
+    //x += dx;
+    //y += dy;
     //this is when the ball hits the top of the screen, reverse direction
     if (y <= canvas.height - (canvas.height - ballRadius)) {
       dy = -dy;
@@ -171,22 +189,25 @@
     }
     //when the ball hits the paddle, reverse ball direction and add to ball speed
     if ((y >= (paddleY - ballRadius) && y <= (paddleY + paddleHeight)) && (x >= paddleX && x <= paddleX + paddleWidth)) {
-      dx += 0.4;
-      dy += 0.4;
-      dy = -dy;
-      colorChanger();
+      if (gameStartFlag) {
+        dx += 0.4;
+        dy += 0.4;
+        dy = -dy;
+        colorChanger();
+      }
     }
 
     //when ball hits bottom of screen, GAME OVER alert message
     if (y >= canvas.height - ballRadius) {
       lives--;
+      gameStartFlag = false;
       if (!lives) {
         alert(`GAME OVER`);
         document.location.reload();
         //clearInterval(interval); //Needed for Chrome to end game
       } else{
         x = canvas.width/2;
-        y = canvas.height-30;
+        y = canvas.height - 40 - 10;
         dx = 2;
         dy = -2;
         paddleX = (canvas.width-paddleWidth)/2;

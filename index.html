@@ -189,7 +189,7 @@
       colorChanger();
     }
     //when the ball hits the paddle, reverse ball direction and add to ball speed
-    if ((y >= (paddleY - ballRadius) && y <= (paddleY + paddleHeight)) && (x >= paddleX && x <= paddleX + paddleWidth)) {
+    if (y == paddleY && (x >= paddleX && x <= paddleX + paddleWidth)) {
       if (gameStartFlag) {
         dx += 0.4;
         dy += 0.4;

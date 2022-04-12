@@ -29,6 +29,7 @@
   let score = 0;
   let lives = 3;
   let gameStartFlag = false;
+  let paddleCenter = paddleX + (paddleWidth / 2);
 
   //variables for bricks; all dimensions and starting points
   let brickRowCount = 1;
@@ -120,6 +121,12 @@
     }
   }
 
+  function drawStart() {
+    ctx.font = "32px Arial";
+    ctx. fillStyle = "DarkGrey";
+    ctx.fillText("Press Space to Start", canvas.width/4-20, canvas.height/2);
+  }
+
   function drawScore() {
     ctx.font = "16px Arial";
     ctx. fillStyle = "Maroon";
@@ -179,6 +186,7 @@
       x += dx;
     }
     if (!gameStartFlag) {
+      drawStart();
       x = (paddleX + (paddleWidth/2));
     }
     //x += dx;
@@ -191,6 +199,16 @@
     //when the ball hits the paddle, reverse ball direction and add to ball speed
     if (y == paddleY && (x >= paddleX && x <= paddleX + paddleWidth)) {
       if (gameStartFlag) {
+        /*
+        paddleX + (paddleWidth/2) is the center point of the paddle.
+        the angle of return of the ball on collision
+        should be set to the the distance between
+        the starting point paddleX and the center point, paddleX + (paddleWidth/2).
+        to determine which side was hit, use less/greater than the center point
+
+        if x is less than center, then
+        center minus start minus x,
+        */
         dx += 0.4;
         dy += 0.4;
         dy = -dy;
@@ -225,6 +243,7 @@
       dx = -dx;
       colorChanger();
     }
+    //console.log(`the paddle start point is ${paddleX} the paddle center is ${paddleCenter} the paddle width is ${paddleWidth}`)
     requestAnimationFrame(draw);
   }
 

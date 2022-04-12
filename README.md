@@ -1,10 +1,11 @@
 # js-breakout
 
-![Arkanoid screenshot](https://upload.wikimedia.org/wikipedia/en/a/a2/Arkanoid.png)
-
 -ABOUT-
 
 Breakout game (like Arkanoid) using pure javascript
+
+
+![Arkanoid screenshot](https://upload.wikimedia.org/wikipedia/en/a/a2/Arkanoid.png)
 
 -INSTALL-
 

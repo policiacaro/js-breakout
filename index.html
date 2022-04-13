@@ -17,18 +17,19 @@
   let ctx = canvas.getContext("2d");
   let x = canvas.width/2;
   let y = canvas.height - 40 - 10; // minus 40 is paddle height, minus 10 is ball radius
-  let dx = 2; // ball speed and direction for x axis
-  let dy = -2; // ball speed and direction y axis
+  let dx = 4.0; // ball speed and direction for x axis
+  let dy = -4.0; // ball speed and direction y axis
   let ballRadius = 10; // ball size
   let paddleY = canvas.height - 40; // paddle starting corner for draw function
   let paddleHeight = 10; // size of paddle on y axis
-  let paddleWidth = 45;// size of paddle on x axis
+  let paddleWidth = 55;// size of paddle on x axis
   let paddleX = (canvas.width-paddleWidth) / 2; // paddle starting corner for draw function
   const colors = ["#0095DD", "#0006DD", "#7100DD", "#00DD6B"]; // array of colors for the ball to change into when it bounces
   let colorVariable = 0;
   let score = 0;
   let lives = 3;
   let gameStartFlag = false;
+  let paddleCenter = paddleWidth / 2;
 
   //variables for bricks; all dimensions and starting points
   let brickRowCount = 1;
@@ -120,6 +121,12 @@
     }
   }
 
+  function drawStart() {
+    ctx.font = "32px Arial";
+    ctx. fillStyle = "DarkGrey";
+    ctx.fillText("Press Space to Start", canvas.width/4-20, canvas.height/2);
+  }
+
   function drawScore() {
     ctx.font = "16px Arial";
     ctx. fillStyle = "Maroon";
@@ -179,6 +186,7 @@
       x += dx;
     }
     if (!gameStartFlag) {
+      drawStart();
       x = (paddleX + (paddleWidth/2));
     }
     //x += dx;
@@ -189,10 +197,40 @@
       colorChanger();
     }
     //when the ball hits the paddle, reverse ball direction and add to ball speed
-    if ((y >= (paddleY - ballRadius) && y <= (paddleY + paddleHeight)) && (x >= paddleX && x <= paddleX + paddleWidth)) {
+    if ((y >= paddleY && y <= paddleY + paddleHeight) && (x >= paddleX && x <= paddleX + paddleWidth)) {
       if (gameStartFlag) {
-        dx += 0.4;
-        dy += 0.4;
+        /*
+        paddleX + (paddleWidth/2) is the center point of the paddle.
+        the angle of return of the ball on collision
+        should be set to the the distance between
+        the starting point paddleX and the center point, paddleX + (paddleWidth/2).
+        to determine which side was hit, use less/greater than the center point
+
+        if x is less than center, then
+        center minus start minus x,
+
+        start to center is 217.5 (start) to 240 (center), which is 23
+        dy should equal 23-21
+        */
+        if (x <= (paddleCenter + paddleX) ) {
+          if (dx > 0) {
+            dx = -dx; // this redirects the ball to the left , so it will always bounce to left when hit with this side
+          }
+          dy = (x - paddleX)/(paddleCenter / 2) + 2;
+          //dx += (2 - dy);
+          console.log(`LEFT dy variable when hitting paddle ${dy}`);
+          console.log(`dx variable ${dx}`);
+        }
+        if (x > (paddleCenter + paddleX) ) {
+          if (dx < 0) {
+            dx = -dx; // redirects ball to right, will always bounce to right when hit with this side
+          }
+          dy = (x - paddleX)/(paddleCenter) + 2;
+          console.log(`RIGHT dy variable when hitting paddle ${dy}`);
+          console.log(`dx variable ${dx}`);
+        }
+        //dx += 0.4;
+        //dy += 0.4;
         dy = -dy;
         colorChanger();
       }
@@ -209,8 +247,8 @@
       } else{
         x = canvas.width/2;
         y = canvas.height - 40 - 10;
-        dx = 2;
-        dy = -2;
+        dx = 4.0;
+        dy = -4.0;
         paddleX = (canvas.width-paddleWidth)/2;
       }
     }
@@ -225,6 +263,8 @@
       dx = -dx;
       colorChanger();
     }
+    //console.log(`the paddle start point is ${paddleX} the paddle center is ${paddleCenter} the paddle width is ${paddleWidth}`)
+    //console.log(`this is the dy constant ${dy} this is paddle center ${paddleCenter}`);
     requestAnimationFrame(draw);
   }
 

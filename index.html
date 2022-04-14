@@ -30,9 +30,11 @@
   let lives = 3;
   let gameStartFlag = false;
   let paddleCenter = paddleWidth / 2;
+  let angleLeft = 0.0;
+  let angleRight = 0.0;
 
   //variables for bricks; all dimensions and starting points
-  let brickRowCount = 1;
+  let brickRowCount = 4;
   let brickColumnCount = 6;
   let brickWidth = 60;
   let brickHeight = 20;
@@ -53,7 +55,7 @@
 
   function colorChanger() { // cycles through the colors in colors array
     colorVariable += 1;
-    if (colorVariable > 3) colorVariable = 0;
+    if ( colorVariable > 3 ) colorVariable = 0;
   }
 
   function drawBall() { // creates the ball on screen
@@ -73,31 +75,31 @@
   }
 
   function keyDownHandler(e) { // check if right/left arrow is pressed
-    if (e.key == "Right" || e.key == "ArrowRight") {
+    if ( e.key == "Right" || e.key == "ArrowRight" ) {
       rightPressed = true;
-    } else if (e.key == "Left" || e.key == "ArrowLeft") {
+    } else if ( e.key == "Left" || e.key == "ArrowLeft" ) {
       leftPressed = true;
     }
-    if (e.keyCode == 32 ) {
+    if ( e.keyCode == 32 ) {
       spacePressed = true;
       gameStartFlag = true;
     }
   }
 
   function keyUpHandler(e) { // check if left arrow is pressed
-    if (e.key == "Right" || e.key == "ArrowRight") {
+    if ( e.key == "Right" || e.key == "ArrowRight" ) {
       rightPressed = false;
-    } else if (e.key == "Left" || e.key == "ArrowLeft") {
+    } else if ( e.key == "Left" || e.key == "ArrowLeft" ) {
       leftPressed = false;
     }
-    if (e.keyCode == 32) {
+    if ( e.keyCode == 32 ) {
       spacePressed = false;
     }
   }
 
   function mouseMoveHandler(e) {
     let relativeX = e.clientX - canvas.offsetLeft;
-    if (relativeX > 0 && relativeX < canvas.width) {
+    if ( relativeX > 0 && relativeX < canvas.width ) {
       paddleX = relativeX - paddleWidth/2;
     }
   }
@@ -106,12 +108,12 @@
     for(let c=0; c<brickColumnCount; c++) {
       for(let r=0; r<brickRowCount; r++) {
         let b = bricks[c][r];
-        if (b.status === 1 ) {
-          if (x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+        if ( b.status === 1 ) {
+          if ( x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight ) {
             dy = -dy;
             b.status = 0;
             score += 100;
-            if (score/100 === brickColumnCount * brickRowCount) {
+            if ( score/100 === brickColumnCount * brickRowCount ) {
               alert(`YOU WIN, CONGRATULATIONS! \n\nYour score was ${score} points, thank you for playing!`);
               document.location.reload();
             }
@@ -142,7 +144,7 @@
   function drawBricks() {
     for(let c=0; c<brickColumnCount; c++) {
       for(let r=0; r<brickRowCount; r++) {
-        if (bricks[c][r].status === 1) {
+        if ( bricks[c][r].status === 1 ) {
           let brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
           let brickY = (r * 23)+brickOffsetTop;
           bricks[c][r].x = brickX;
@@ -170,80 +172,84 @@
     drawLives();
     collisionDetection();
 
-    if (leftPressed) {
+    if ( leftPressed ) {
       paddleX -= 4;
-      if (paddleX < 0) {
+      if ( paddleX < 0 ) {
         paddleX = 0;
       }
-    } else if (rightPressed) {
+    } else if ( rightPressed ) {
       paddleX += 4;
-      if (paddleX + paddleWidth > canvas.width) {
+      if ( paddleX + paddleWidth > canvas.width ) {
         paddleX = canvas.width - paddleWidth;
       }
     }
-    if (gameStartFlag) {
+    if ( gameStartFlag ) {
       y += dy;
       x += dx;
     }
-    if (!gameStartFlag) {
+    if ( !gameStartFlag ) {
       drawStart();
       x = (paddleX + (paddleWidth/2));
     }
     //x += dx;
     //y += dy;
     //this is when the ball hits the top of the screen, reverse direction
-    if (y <= canvas.height - (canvas.height - ballRadius)) {
+    if ( y <= canvas.height - (canvas.height - ballRadius) ) {
       dy = -dy;
       colorChanger();
     }
     //when the ball hits the paddle, reverse ball direction and add to ball speed
-    if ((y >= paddleY && y <= paddleY + paddleHeight) && (x >= paddleX && x <= paddleX + paddleWidth)) {
-      if (gameStartFlag) {
-        /*
-        paddleX + (paddleWidth/2) is the center point of the paddle.
-        the angle of return of the ball on collision
-        should be set to the the distance between
-        the starting point paddleX and the center point, paddleX + (paddleWidth/2).
-        to determine which side was hit, use less/greater than the center point
+    if ( (y >= paddleY && y <= paddleY + paddleHeight) && (x >= paddleX && x <= paddleX + paddleWidth) ) {
+      if ( gameStartFlag ) {
+        // this is realistic ball bouncing that changes the angle based off of the position of the paddle.
+        // it wasnt fun because the ball would sometimes have too steep of an angle and you would wait forever to hit something
+        // but i really liked the math i did so its staying here lol
 
-        if x is less than center, then
-        center minus start minus x,
-
-        start to center is 217.5 (start) to 240 (center), which is 23
-        dy should equal 23-21
-        */
-        if (x <= (paddleCenter + paddleX) ) {
-          if (dx > 0) {
+        // check to see if the left 1/4 of the paddle is hit
+        if ( x <= (paddleX + (paddleCenter / 2)) ) {
+          angleLeft = (x - paddleX)/(paddleCenter/4) ;
+          dx = 5 - angleLeft;
+          dy = 2;
+          if ( dx > 0 ) {
             dx = -dx; // this redirects the ball to the left , so it will always bounce to left when hit with this side
           }
-          dy = (x - paddleX)/(paddleCenter / 2) + 2;
-          //dx += (2 - dy);
           console.log(`LEFT dy variable when hitting paddle ${dy}`);
           console.log(`dx variable ${dx}`);
         }
-        if (x > (paddleCenter + paddleX) ) {
-          if (dx < 0) {
+        if ( (x > (paddleX + (paddleCenter / 2))) && (x <= (paddleX + paddleCenter)) ) { // check to see if left 2/4 is hit
+          dy = (x - paddleX)/(paddleCenter / 2) + 3;
+          dx = 5 - dy;
+          if ( dx > 0 ) {
+            dx = -dx;
+          }
+        }
+        // check to see if right side of paddle was hit, 3/4
+        if ( x > (paddleCenter + paddleX) ) {
+          dy = (x - paddleX)/(paddleCenter) + 3;
+          dx = dy - (5 - dy);
+          if ( dx < 0 ) {
             dx = -dx; // redirects ball to right, will always bounce to right when hit with this side
           }
-          dy = (x - paddleX)/(paddleCenter) + 2;
           console.log(`RIGHT dy variable when hitting paddle ${dy}`);
           console.log(`dx variable ${dx}`);
         }
         //dx += 0.4;
         //dy += 0.4;
+
+
         dy = -dy;
         colorChanger();
       }
+      //console.log(`this is dy ${dy} this is dx ${dx}`);
     }
 
     //when ball hits bottom of screen, GAME OVER alert message
-    if (y >= canvas.height - ballRadius) {
+    if ( y >= canvas.height - ballRadius ) {
       lives--;
       gameStartFlag = false;
-      if (!lives) {
+      if ( !lives ) {
         alert(`GAME OVER`);
         document.location.reload();
-        //clearInterval(interval); //Needed for Chrome to end game
       } else{
         x = canvas.width/2;
         y = canvas.height - 40 - 10;
@@ -254,12 +260,12 @@
     }
 
     //when ball hits left side of screen, reverse direction
-    if (x <= 10) {
+    if ( x <= 10 ) {
       dx = -dx;
       colorChanger();
     }
     //when ball hits right side of screen, reverse direction
-    if (x >= 470) {
+    if ( x >= 470 ) {
       dx = -dx;
       colorChanger();
     }
@@ -272,7 +278,6 @@
   document.addEventListener("keyup", keyUpHandler, false);
   document.addEventListener("mousemove", mouseMoveHandler, false);
 
-  //let interval = setInterval(draw, 10); // needed to call variable in clearInterval function for Chrome
   draw();
 
 </script>

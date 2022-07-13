@@ -5,7 +5,7 @@
 Breakout game (like Arkanoid) using pure javascript
 
 
-![js-breakout screenshot](../Screenshot from 2022-07-13 16-11-42.png) "Javascript Breakout"
+![js-breakout screenshot](Screenshot%20from%202022-07-13%2016-11-42.png?raw=true)
 
 -INSTALL-
 

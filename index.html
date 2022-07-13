@@ -10,15 +10,16 @@
 </head>
 <body>
 
-<canvas id="myCanvas" width="480" height="720"></canvas>
+<canvas id="myCanvas" width="480" height="720" style="border: solid 5px black; border-radius: 15px;"></canvas>
+<img id="paddleImage1" src="../js-breakout/paddleImage1" style="display:none;" />
 
 <script>
   let canvas = document.getElementById("myCanvas");
   let ctx = canvas.getContext("2d");
   let x = canvas.width/2;
   let y = canvas.height - 40 - 10; // minus 40 is paddle height, minus 10 is ball radius
-  let dx = 4.0; // ball speed and direction for x axis
-  let dy = -4.0; // ball speed and direction y axis
+  let dx = 3.5; // ball speed and direction for x axis
+  let dy = -3.5; // ball speed and direction y axis
   let ballRadius = 10; // ball size
   let paddleY = canvas.height - 40; // paddle starting corner for draw function
   let paddleHeight = 10; // size of paddle on y axis
@@ -67,11 +68,16 @@
   }
 
   function drawPaddle() { // creates the paddle on screen
+    let paddleImage = document.getElementById("paddleImage1");
+    ctx.drawImage(paddleImage, paddleX, paddleY);
+
+    /*
     ctx.beginPath();
     ctx.rect(paddleX, paddleY, paddleWidth, paddleHeight);
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
+    */
   }
 
   function keyDownHandler(e) { // check if right/left arrow is pressed

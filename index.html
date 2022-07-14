@@ -5,21 +5,24 @@
   <title>Gamedev Canvas Workshop</title>
   <style>
     * { padding: 0; margin: 0; }
-    canvas { background: #eee; display: block; margin: 0 auto; }
+    canvas { background: #eee; display: block; margin: 0 auto; border: solid 5px black; border-radius: 15px 15px 0px 0px; margin-top: 10px;}
   </style>
 </head>
 <body>
-
-<canvas id="myCanvas" width="480" height="720" style="border: solid 5px black; border-radius: 15px;"></canvas>
-<img id="paddleImage1" src="../js-breakout/paddleImage1" style="display:none;" />
-
+<div id="mainWrapper">
+  <canvas id="myCanvas" width="480" height="720"></canvas>
+  <canvas id="statsCanvas" width="480" height="40" style="margin-top: 0; border-top: none; border-radius: 0px 0px 15px 15px;"></canvas>
+  <img id="paddleImage1" src="../js-breakout/paddleImage1" style="display:none;" />
+</div>
 <script>
+  let stats = document.getElementById("statsCanvas");
   let canvas = document.getElementById("myCanvas");
+  let ctx2 = stats.getContext("2d");
   let ctx = canvas.getContext("2d");
-  let x = canvas.width/2;
-  let y = canvas.height - 40 - 10; // minus 40 is paddle height, minus 10 is ball radius
-  let dx = 3.5; // ball speed and direction for x axis
-  let dy = -3.5; // ball speed and direction y axis
+  let x = canvas.width/2; // 480/2 = 240
+  let y = canvas.height - 40 - 10; // 720-40-10 = 670, minus 40 is paddle height, minus 10 is ball radius
+  let dx = 3.7; // ball speed and direction for x axis
+  let dy = -3.7; // ball speed and direction y axis
   let ballRadius = 10; // ball size
   let paddleY = canvas.height - 40; // paddle starting corner for draw function
   let paddleHeight = 10; // size of paddle on y axis
@@ -55,6 +58,7 @@
 
 
   function colorChanger() { // cycles through the colors in colors array
+    if ( !gameStartFlag ) return;
     colorVariable += 1;
     if ( colorVariable > 3 ) colorVariable = 0;
   }
@@ -131,13 +135,13 @@
 
   function drawStart() {
     ctx.font = "32px Arial";
-    ctx. fillStyle = "DarkGrey";
+    ctx.fillStyle = "DarkGrey";
     ctx.fillText("Press Space to Start", canvas.width/4-20, canvas.height/2);
   }
-
+/*
   function drawScore() {
     ctx.font = "16px Arial";
-    ctx. fillStyle = "Maroon";
+    ctx.fillStyle = "Maroon";
     ctx.fillText("Score: "+score, 8, 20);
   }
 
@@ -146,7 +150,7 @@
     ctx.fillStyle = "Maroon";
     ctx.fillText("Lives: "+lives, canvas.width-65, 20);
   }
-
+*/
   function drawBricks() {
     for(let c=0; c<brickColumnCount; c++) {
       for(let r=0; r<brickRowCount; r++) {
@@ -165,17 +169,24 @@
     }
   }
 
+  function draw2ndScore() {
+    ctx2.font = "32px Arial";
+    ctx2.fillStyle = "Maroon";
+    ctx2.fillText(`Score: ${score}                   Lives: ${lives}`, 8, 30);
+    console.log('2nd score being called');
+  }
+
   function gameStart() {
 
   }
 
   function draw() { // main gameplay loop, drawing canvas, paddle and ball
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx2.clearRect(0, 0, stats.width, stats.height);
+    draw2ndScore();
     drawBricks();
     drawBall();
     drawPaddle();
-    drawScore();
-    drawLives();
     collisionDetection();
 
     if ( leftPressed ) {
@@ -210,6 +221,7 @@
         // this is realistic ball bouncing that changes the angle based off of the position of the paddle.
         // it wasnt fun because the ball would sometimes have too steep of an angle and you would wait forever to hit something
         // but i really liked the math i did so its staying here lol
+        // oops i guess i deleted it on a push; a tale in 4 comments
 
         // check to see if the left 1/4 of the paddle is hit
         if ( x <= (paddleX + (paddleCenter / 2)) ) {
@@ -221,6 +233,7 @@
           }
           console.log(`LEFT dy variable when hitting paddle ${dy}`);
           console.log(`dx variable ${dx}`);
+          console.log(`x variable ${x}`);
         }
         if ( (x > (paddleX + (paddleCenter / 2))) && (x <= (paddleX + paddleCenter)) ) { // check to see if left 2/4 is hit
           dy = (x - paddleX)/(paddleCenter / 2) + 3;
@@ -238,6 +251,7 @@
           }
           console.log(`RIGHT dy variable when hitting paddle ${dy}`);
           console.log(`dx variable ${dx}`);
+          console.log(`y variable ${y}`);
         }
         //dx += 0.4;
         //dy += 0.4;
@@ -275,6 +289,7 @@
       dx = -dx;
       colorChanger();
     }
+
     //console.log(`the paddle start point is ${paddleX} the paddle center is ${paddleCenter} the paddle width is ${paddleWidth}`)
     //console.log(`this is the dy constant ${dy} this is paddle center ${paddleCenter}`);
     requestAnimationFrame(draw);
@@ -283,7 +298,6 @@
   document.addEventListener("keydown", keyDownHandler, false);
   document.addEventListener("keyup", keyUpHandler, false);
   document.addEventListener("mousemove", mouseMoveHandler, false);
-
   draw();
 
 </script>

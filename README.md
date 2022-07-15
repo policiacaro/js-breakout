@@ -5,7 +5,7 @@
 Breakout game (like Arkanoid) using pure javascript
 
 
-![js-breakout screenshot](Screenshot%20from%202022-07-13%2016-11-42.png?raw=true)
+[![js-breakout](Screenshot%20from%202022-07-13%2016-11-42.png?raw=true)](https://pure-js-breakout.herokuapp.com/)
 
 -INSTALL-
 
